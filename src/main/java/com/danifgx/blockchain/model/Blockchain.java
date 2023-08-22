@@ -62,17 +62,23 @@ public class Blockchain {
             e.printStackTrace();
         }
     }
-
     public List<Block> loadBlockchain(String filename) {
-        List<Block> blockchain = null;
-        try (FileInputStream fileIn = new FileInputStream(filename);
-             ObjectInputStream in = new ObjectInputStream(fileIn)) {
-            blockchain = (List<Block>) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        List<Block> blockchain = new ArrayList<>();
+        File file = new File(filename);
+        if (file.exists() && file.length() > 0) {
+            try (FileInputStream fileIn = new FileInputStream(filename);
+                 ObjectInputStream in = new ObjectInputStream(fileIn)) {
+                blockchain = (List<Block>) in.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("File does not exist or is empty, creating a new blockchain.");
         }
         return blockchain;
     }
+
+
 
     @Override
     public String toString() {
