@@ -28,7 +28,9 @@ public class CentralServer {
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("New client connected");
-                new ClientHandler(socket, blockchain).run();
+                ClientHandler clientHandler = new ClientHandler(socket, blockchain);
+                // Aquí usamos un nuevo hilo para manejar múltiples clientes simultáneamente
+                new Thread(clientHandler).start();
             }
         } catch (IOException e) {
             System.out.println("Server exception: " + e.getMessage());

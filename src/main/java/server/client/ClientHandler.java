@@ -2,6 +2,7 @@ package server.client;
 
 import com.danifgx.blockchain.model.Blockchain;
 import lombok.AllArgsConstructor;
+import server.authentication.UserAuthentication;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,34 +11,59 @@ import java.net.Socket;
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final Blockchain blockchain;
+    private DataInputStream input;
+    private DataOutputStream output;
 
+    public ClientHandler(Socket socket, Blockchain blockchain) {
+        this.socket = socket;
+        this.blockchain = blockchain;
+        try {
+            this.input = new DataInputStream(socket.getInputStream());
+            this.output = new DataOutputStream(socket.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run() {
-        try (
-                InputStream input = socket.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                OutputStream output = socket.getOutputStream();
-                PrintWriter writer = new PrintWriter(output, true);
-        ) {
-            String clientRequest = reader.readLine();
-            if (clientRequest.startsWith("ADD_TRANSACTION")) {
-                handleAddTransaction(clientRequest, writer);
-            } else if (clientRequest.equals("GET_BLOCKCHAIN")) {
-                handleGetBlockchain(writer);
-            } else if (clientRequest.startsWith("SYNC_BLOCKCHAIN")) {
-                handleSyncBlockchain(clientRequest, writer);
-            } else if (clientRequest.equals("VALIDATE_BLOCKCHAIN")) {
-                handleValidateBlockchain(writer);
+        try {
+            output.writeUTF("Please enter your username: ");
+            String username = input.readUTF();
+            output.writeUTF("Please enter your password: ");
+            String password = input.readUTF();
+            boolean authenticated = UserAuthentication.authenticate(username, password);
+            output.writeBoolean(authenticated);
+
+            if (authenticated) {
+                System.out.println("Authenticated!");
+                String clientRequest = input.readUTF();
+                handleRequest(clientRequest);
             } else {
-                writer.println("ERROR:Unknown Request");
+                System.out.println("Authentication failed!");
             }
         } catch (IOException e) {
             System.out.println("Client exception: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    private void handleAddTransaction(String request, PrintWriter writer) {
+
+
+    private void handleRequest(String clientRequest) throws IOException {
+        if (clientRequest.startsWith("ADD_TRANSACTION")) {
+            handleAddTransaction(clientRequest);
+        } else if (clientRequest.equals("GET_BLOCKCHAIN")) {
+            handleGetBlockchain();
+        } else if (clientRequest.startsWith("SYNC_BLOCKCHAIN")) {
+            handleSyncBlockchain(clientRequest);
+        } else if (clientRequest.equals("VALIDATE_BLOCKCHAIN")) {
+            handleValidateBlockchain();
+        } else {
+            output.writeUTF("ERROR:Unknown Request");
+        }
+    }
+
+    private void handleAddTransaction(String request) throws IOException {
         String[] parts = request.split(":");
         if (parts.length == 5) {
             String sender = parts[1];
@@ -47,28 +73,28 @@ public class ClientHandler implements Runnable {
 
             // TODO: Create and add transaction to blockchain
             // Respond with SUCCESS or ERROR as needed
-            writer.println("SUCCESS");
+            output.writeUTF("SUCCESS");
         } else {
-            writer.println("ERROR:Malformed Request");
+            output.writeUTF("ERROR:Malformed Request");
         }
     }
 
-    private void handleGetBlockchain(PrintWriter writer) {
+    private void handleGetBlockchain() throws IOException {
         // TODO: Serialize and send the blockchain data
         String serializedBlockchain = ""; // Serialize the blockchain object
-        writer.println(serializedBlockchain);
+        output.writeUTF(serializedBlockchain);
     }
 
-    private void handleSyncBlockchain(String request, PrintWriter writer) {
+    private void handleSyncBlockchain(String request) throws IOException {
         String serializedData = request.substring(15); // Extract serialized data
         // TODO: Deserialize and sync the blockchain data
         // Respond with SUCCESS or ERROR as needed
-        writer.println("SUCCESS");
+        output.writeUTF("SUCCESS");
     }
 
-    private void handleValidateBlockchain(PrintWriter writer) {
+    private void handleValidateBlockchain() throws IOException {
         // TODO: Validate the blockchain
         boolean isValid = blockchain.isValid();
-        writer.println(isValid ? "VALID" : "INVALID");
+        output.writeUTF(isValid ? "VALID" : "INVALID");
     }
 }

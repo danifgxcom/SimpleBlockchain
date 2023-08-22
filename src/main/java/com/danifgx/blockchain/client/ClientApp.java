@@ -7,11 +7,14 @@ public class ClientApp {
         Client client = new Client("localhost", 8080);
         try {
             client.start();
-            client.sendMessage("Hello, Server!");
-            Object response = client.receiveMessage();
+
+            String request = "GET_BLOCKCHAIN";
+            client.sendMessage(request);
+            String response = client.receiveMessage();
             System.out.println("Server replied: " + response);
+
             client.stop();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
