@@ -14,6 +14,28 @@ Depending on the complexity you want, you may or may not implement basic authent
 
 Step 4: Communication Protocol
 Define a basic protocol for clients and the server to communicate with each other. This could include messages like "Send Transaction," "Request Blockchain," etc.
+Messages accepted:
+- Adding a new transaction
+- Requesting the blockchain
+- Synchronizing the blockchain
+- Validating the blockchain
+1. Adding a Transaction:
+Request from client: ADD_TRANSACTION:<sender>:<receiver>:<amount>:<private_key>
+Response from server: SUCCESS or ERROR:<reason>
+
+2. Requesting the Blockchain:
+Request from client: GET_BLOCKCHAIN
+Response from server: serialized blockchain data
+
+3. Synchronizing the Blockchain:
+Request from client: SYNC_BLOCKCHAIN:<serialized_data>
+Response from server: SUCCESS or ERROR:<reason>
+
+4. Validating the Blockchain:
+Request from client: VALIDATE_BLOCKCHAIN
+Response from server: VALID or INVALID
+
+
 
 Step 5: Consensus Protocol
 Implement a simple mechanism for the central server to validate transactions and blocks. This could be as simple as checking signatures and making sure balances are correct.
