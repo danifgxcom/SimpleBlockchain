@@ -6,6 +6,8 @@ import lombok.Getter;
 import java.io.Serializable;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
+import java.util.Objects;
 
 @Getter
 public class Transaction implements Serializable {
@@ -42,5 +44,23 @@ public class Transaction implements Serializable {
 
     private boolean verify(PublicKey publicKey, String data, byte[] signature) {
         return StringUtil.verifyECDSASig(publicKey, data, signature);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Double.compare(that.value, value) == 0 &&
+                Objects.equals(sender, that.sender) &&
+                Objects.equals(recipient, that.recipient);
+    }
+
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(sender, recipient, value);
+        result = 31 * result + Arrays.hashCode(signature);
+        return result;
     }
 }

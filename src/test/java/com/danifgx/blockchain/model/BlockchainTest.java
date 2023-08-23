@@ -4,6 +4,7 @@ import com.danifgx.blockchain.interfaces.HashCalculator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
@@ -118,5 +119,46 @@ class BlockchainTest {
         assertTrue(loadedBlockchain.isEmpty());
     }
 
-    // Additional test cases should be added to cover save/load operations, and other edge cases.
+    @Test
+    void testSaveAndLoad_EmptyBlockchain() {
+        String filename = "test_empty.blockchain";
+        blockchain.saveBlockchain(blockchain.getChain(), filename);
+
+        List<Block> loadedBlockchain = blockchain.loadBlockchain(filename);
+        assertEquals(1, loadedBlockchain.size()); // Genesis block
+        assertEquals("0", loadedBlockchain.get(0).getPreviousHash());
+        assertTrue(new File(filename).delete());
+    }
+
+    @Test
+    void testSaveAndLoad_NonEmptyBlockchain() throws Exception {
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(2048);
+
+        KeyPair keyPairAlice = keyGen.genKeyPair();
+        PublicKey alice = keyPairAlice.getPublic();
+        KeyPair keyPairBob = keyGen.genKeyPair();
+        PublicKey bob = keyPairBob.getPublic();
+
+        Transaction transaction = new Transaction(alice, bob, 50);
+        List<Transaction> transactions = Collections.singletonList(transaction);
+
+        blockchain.addBlock(transactions);
+
+        String filename = "test_non_empty.blockchain";
+        blockchain.saveBlockchain(blockchain.getChain(), filename);
+
+        List<Block> loadedBlockchain = blockchain.loadBlockchain(filename);
+        assertEquals(2, loadedBlockchain.size());
+        assertEquals(transactions, loadedBlockchain.get(1).getTransactions());
+        assertTrue(new File(filename).delete());
+    }
+
+    @Test
+    void testSaveBlockchain_NullBlockchain() {
+        assertDoesNotThrow(() -> blockchain.saveBlockchain(null, "nulltest.blockchain"));
+    }
+
+
+
 }
