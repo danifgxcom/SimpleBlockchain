@@ -1,44 +1,46 @@
 package com.danifgx.blockchain.model;
 
 import com.danifgx.blockchain.util.StringUtil;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
 @Getter
-@Setter
-@AllArgsConstructor
 public class Transaction implements Serializable {
-    private PublicKey sender;
-    private String recipient;
-    private double value;
+    private final PublicKey sender;
+    private final PublicKey recipient;
+    private final double value;
     private byte[] signature;
 
-    public Transaction(PublicKey sender, String recipient, double value) {
+    public Transaction(PublicKey sender, PublicKey recipient, double value) {
         this.sender = sender;
         this.recipient = recipient;
         this.value = value;
     }
 
     public void signTransaction(PrivateKey privateKey) {
-        String data = StringUtil.getStringFromKey(sender) + recipient + Double.toString(value);
-        signature = StringUtil.applyECDSASig(privateKey, data);
+        signature = sign(privateKey, getSignatureData());
     }
 
     public boolean verifySignature() {
-        String data = StringUtil.getStringFromKey(sender) + recipient + Double.toString(value);
-        return StringUtil.verifyECDSASig(sender, data, signature);
+        return verify(sender, getSignatureData(), signature);
     }
 
     public String calculateHash() {
-        return StringUtil.applySha256(
-                StringUtil.getStringFromKey(sender) +
-                        recipient +
-                        Double.toString(value)
-        );
+        return StringUtil.applySha256(getSignatureData());
+    }
+
+    private String getSignatureData() {
+        return StringUtil.getStringFromKey(sender) + recipient + Double.toString(value);
+    }
+
+    private byte[] sign(PrivateKey privateKey, String data) {
+        return StringUtil.applyECDSASig(privateKey, data);
+    }
+
+    private boolean verify(PublicKey publicKey, String data, byte[] signature) {
+        return StringUtil.verifyECDSASig(publicKey, data, signature);
     }
 }

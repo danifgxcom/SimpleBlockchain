@@ -9,9 +9,7 @@ import com.danifgx.blockchain.util.StringUtil;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Scanner;
 
 public class MainMenu {
@@ -41,63 +39,22 @@ public class MainMenu {
                 case 2:
                     KeyPair keyPair = KeyGeneratorUtil.generateKeyPair();
                     String publicKeyAsString = Base64.getEncoder().encodeToString(keyPair.getPublic().getEncoded());
-
-                    System.out.println("Clave pública generada: " + publicKeyAsString);
-                    System.out.print("Introduce la clave pública del remitente como una cadena (pulsa Enter para usar la clave generada): ");
-
-                    String inputPublicKey = scanner.nextLine().trim();
-                    if (inputPublicKey.isEmpty()) {
-                        inputPublicKey = publicKeyAsString;
-                    }
-                    System.out.print("Introduce la clave pública del remitente como una cadena: ");
-                    String senderKeyString = scanner.nextLine();
+                    String senderKeyString = scanner.nextLine().trim();
                     if (senderKeyString.isEmpty()) {
                         senderKeyString = publicKeyAsString;
                     }
-
                     PublicKey sender = StringUtil.getKeyFromString(senderKeyString);
-
-                    String defaultReceiver = "default_receiver_ID";
-                    System.out.print("Introduce el receptor (ID) (pulsa Intro para usar el valor predeterminado: " + defaultReceiver + "): ");
-                    String receiver = scanner.nextLine();
-
-                    if (receiver.isEmpty()) {
-                        receiver = defaultReceiver;
-                    }
-
-                    double defaultValue = 0.0;
-                    System.out.print("Introduce la cantidad (pulsa Intro para usar el valor predeterminado: " + defaultValue + "): ");
-                    String valueInput = scanner.nextLine();
-
-                    double value;
-                    if (valueInput.isEmpty()) {
-                        value = defaultValue;
-                    } else {
-                        value = Double.parseDouble(valueInput);
-                    }
-
-
-                    String defaultPrivateKeyString = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgeaR5iesIVa8FC0BeHKzmCwCoxK7hlje6WvpZJHHWSm2gCgYIKoZIzj0DAQehRANCAARbmFT/qWZ90uZFlFouB4LtrGl9dldaOwErpKcN4zsiLJmjz8dJ0ROlBNaxvc1WB1N/klq/cc9l8uxWeZYQIArc";
-                    System.out.print("Introduce la clave privada del remitente como una cadena (pulsa Intro para usar la clave predeterminada): ");
+                    String receiverKeyString = scanner.nextLine().trim();
+                    PublicKey receiver = StringUtil.getKeyFromString(receiverKeyString);
+                    double value = Double.parseDouble(scanner.nextLine());
                     String privateKeyString = scanner.nextLine();
-
-                    PrivateKey privateKey;
-                    if (privateKeyString.isEmpty()) {
-                        privateKey = StringUtil.getPrivateKeyFromString(defaultPrivateKeyString);
-                    } else {
-                        privateKey = StringUtil.getPrivateKeyFromString(privateKeyString);
-                    }
-
-
+                    PrivateKey privateKey = StringUtil.getPrivateKeyFromString(privateKeyString);
                     Transaction transaction = new Transaction(sender, receiver, value);
                     transaction.signTransaction(privateKey);
-
                     Block lastBlock = blockchain.getChain().get(blockchain.getChain().size() - 1);
                     lastBlock.addTransaction(transaction);
                     break;
                 case 3:
-                    List<Transaction> transactions = new ArrayList<>(); // Esto debería estar lleno de las transacciones que quieres incluir
-                    blockchain.addBlock(transactions);
                     System.out.println("Bloque minado y añadido a la cadena.");
                     break;
                 case 4:

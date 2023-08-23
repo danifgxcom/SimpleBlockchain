@@ -1,5 +1,6 @@
 package com.danifgx.blockchain.model;
 
+import com.danifgx.blockchain.interfaces.DefaultHashCalculator;
 import com.danifgx.blockchain.util.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,11 +39,13 @@ public class Blockchain {
         Block newBlock = Block.builder()
                 .previousHash(previousHash)
                 .transactions(transactions)
+                .hashCalculator(new DefaultHashCalculator())
                 .build();
 
         newBlock.mine(DIFFICULTY);
         chain.add(newBlock);
     }
+
 
     public boolean addTransaction(Transaction transaction) {
         if (transaction != null) {

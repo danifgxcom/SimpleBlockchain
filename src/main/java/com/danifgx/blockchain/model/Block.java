@@ -1,28 +1,38 @@
 package com.danifgx.blockchain.model;
 
+import com.danifgx.blockchain.interfaces.DefaultHashCalculator;
+import com.danifgx.blockchain.interfaces.HashCalculator;
 import com.danifgx.blockchain.util.StringUtil;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class Block implements Serializable {
     private final String previousHash;
-    private final List<Transaction> transactions;
+    private final HashCalculator hashCalculator;
+    private List<Transaction> transactions;
     private int nonce;
     private String hash;
 
+
     @Builder
-    public Block(String previousHash, List<Transaction> transactions) {
-        if (previousHash == null || transactions == null) {
+    public Block(String previousHash, List<Transaction> transactions, HashCalculator hashCalculator) {
+        if (previousHash == null || transactions == null || hashCalculator == null) {
             throw new IllegalArgumentException("Fields cannot be null");
         }
         this.previousHash = previousHash;
         this.transactions = transactions;
-        this.nonce = 0; // Puedes establecer el valor por defecto aquí
+        this.nonce = 0;
+        this.hashCalculator = hashCalculator;
         this.hash = calculateHash();
+    }
+
+    public Block(String previousHash, List<Transaction> transactions) {
+        this(previousHash, transactions, new DefaultHashCalculator());
     }
 
     public String calculateHash() {
@@ -40,7 +50,9 @@ public class Block implements Serializable {
 
     public void addTransaction(Transaction transaction) {
         if (transaction != null) {
-            transactions.add(transaction);
+            this.transactions = new ArrayList<>(transactions);
+            this.transactions.add(transaction);
         }
     }
+
 }

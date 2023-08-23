@@ -70,15 +70,17 @@ public class ClientHandler implements Runnable {
     private void handleAddTransaction(String request) throws IOException {
         String[] parts = request.split(":");
         if (parts.length == 5) {
-            String sender = parts[1];
-            String receiver = parts[2];
+            String senderString = parts[1];
+            String receiverString = parts[2];
             double amount = Double.parseDouble(parts[3]);
             String privateKeyString = parts[4];
-            PrivateKey privateKey = StringUtil.getPrivateKeyFromString(privateKeyString);
-            PublicKey senderKey = StringUtil.getKeyFromString(sender);
-            Transaction transaction = new Transaction(senderKey, receiver, amount);
-            transaction.signTransaction(privateKey);
 
+            PrivateKey privateKey = StringUtil.getPrivateKeyFromString(privateKeyString);
+            PublicKey senderKey = StringUtil.getKeyFromString(senderString);
+            PublicKey receiverKey = StringUtil.getKeyFromString(receiverString);
+
+            Transaction transaction = new Transaction(senderKey, receiverKey, amount);
+            transaction.signTransaction(privateKey);
 
             boolean success = blockchain.addTransaction(transaction);
             output.writeUTF(success ? "SUCCESS" : "ERROR");
@@ -86,6 +88,7 @@ public class ClientHandler implements Runnable {
             output.writeUTF("ERROR:Malformed Request");
         }
     }
+
 
 
     private void handleGetBlockchain() throws IOException {
