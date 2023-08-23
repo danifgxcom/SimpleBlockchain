@@ -54,8 +54,8 @@ public class Transaction implements Serializable {
         return Double.compare(that.value, value) == 0 &&
                 Objects.equals(sender, that.sender) &&
                 Objects.equals(recipient, that.recipient);
+                //Arrays.equals(signature, that.signature);
     }
-
 
     @Override
     public int hashCode() {

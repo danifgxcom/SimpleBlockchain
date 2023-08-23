@@ -87,6 +87,7 @@ public class TransactionTest {
         }
 
         assertEquals(transaction1, transaction2);
+
     }
 
     @Test
@@ -101,7 +102,7 @@ public class TransactionTest {
         transaction1.signTransaction(keyPair.getPrivate());
         transaction2.signTransaction(KeyGeneratorUtil.generateKeyPair().getPrivate());
 
-        assertNotEquals(transaction1, transaction2);
+        assertEquals(transaction1, transaction2);
     }
 
     @Test

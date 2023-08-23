@@ -55,7 +55,13 @@ public class MainMenu {
                     lastBlock.addTransaction(transaction);
                     break;
                 case 3:
-                    System.out.println("Bloque minado y añadido a la cadena.");
+                    Block currentBlock = blockchain.getCurrentBlock();
+                    if (!currentBlock.getTransactions().isEmpty()) {
+                        blockchain.addBlock(currentBlock.getTransactions());
+                        System.out.println("Bloque minado y añadido a la cadena.");
+                    } else {
+                        System.out.println("No hay transacciones para minar.");
+                    }
                     break;
                 case 4:
                     if (blockchain.isValid()) {
