@@ -1,24 +1,27 @@
 package com.danifgx.blockchain.model;
 
 import com.danifgx.blockchain.util.StringUtil;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Getter
-@Setter
 public class Block implements Serializable {
-    private String previousHash;
-    private List<Transaction> transactions;
+    private final String previousHash;
+    private final List<Transaction> transactions;
     private int nonce;
     private String hash;
 
+    @Builder
     public Block(String previousHash, List<Transaction> transactions) {
+        if (previousHash == null || transactions == null) {
+            throw new IllegalArgumentException("Fields cannot be null");
+        }
         this.previousHash = previousHash;
         this.transactions = transactions;
-        this.nonce = 0;
+        this.nonce = 0; // Puedes establecer el valor por defecto aquí
         this.hash = calculateHash();
     }
 
@@ -33,7 +36,6 @@ public class Block implements Serializable {
             nonce++;
             hash = calculateHash();
         }
-        System.out.println("Bloque minado: " + hash);
     }
 
     public void addTransaction(Transaction transaction) {
@@ -41,5 +43,4 @@ public class Block implements Serializable {
             transactions.add(transaction);
         }
     }
-
 }

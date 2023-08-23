@@ -1,6 +1,7 @@
 package com.danifgx.blockchain.model;
 
 import com.danifgx.blockchain.util.StringUtil;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.security.PublicKey;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Transaction implements Serializable {
     private PublicKey sender;
     private String recipient;

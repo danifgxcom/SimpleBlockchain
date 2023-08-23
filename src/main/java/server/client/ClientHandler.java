@@ -1,11 +1,15 @@
 package server.client;
 
 import com.danifgx.blockchain.model.Blockchain;
+import com.danifgx.blockchain.model.Transaction;
+import com.danifgx.blockchain.util.StringUtil;
 import lombok.AllArgsConstructor;
 import server.authentication.UserAuthentication;
 
 import java.io.*;
 import java.net.Socket;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 @AllArgsConstructor
 public class ClientHandler implements Runnable {
@@ -69,15 +73,20 @@ public class ClientHandler implements Runnable {
             String sender = parts[1];
             String receiver = parts[2];
             double amount = Double.parseDouble(parts[3]);
-            String privateKey = parts[4];
+            String privateKeyString = parts[4];
+            PrivateKey privateKey = StringUtil.getPrivateKeyFromString(privateKeyString);
+            PublicKey senderKey = StringUtil.getKeyFromString(sender);
+            Transaction transaction = new Transaction(senderKey, receiver, amount);
+            transaction.signTransaction(privateKey);
 
-            // TODO: Create and add transaction to blockchain
-            // Respond with SUCCESS or ERROR as needed
-            output.writeUTF("SUCCESS");
+
+            boolean success = blockchain.addTransaction(transaction);
+            output.writeUTF(success ? "SUCCESS" : "ERROR");
         } else {
             output.writeUTF("ERROR:Malformed Request");
         }
     }
+
 
     private void handleGetBlockchain() throws IOException {
         // TODO: Serialize and send the blockchain data

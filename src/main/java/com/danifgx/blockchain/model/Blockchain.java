@@ -17,29 +17,46 @@ public class Blockchain {
     private static final int DIFFICULTY = 4;
     private List<Block> chain;
 
-    public Blockchain() {
-        chain = new ArrayList<>();
-        chain.add(createGenesisBlock());
+    public Blockchain(List<Block> chain) {
+        this.chain = chain != null ? chain : new ArrayList<>();
+        if (this.chain.isEmpty()) {
+            this.chain.add(createGenesisBlock());
+        }
     }
+
 
     private Block createGenesisBlock() {
-        List<Transaction> transactions = new ArrayList<>();
-        return new Block("0", transactions);
+        return new Block("0", new ArrayList<>());
     }
-
 
     public Block getLastBlock() {
         return chain.get(chain.size() - 1);
     }
 
-    // Método para agregar un bloque a la cadena
-    public void addBlock(Block newBlock) {
-        newBlock.setPreviousHash(getLastBlock().getHash());
-        newBlock.mine(DIFFICULTY); // Puedes implementar la minería según lo desees
+    public void addBlock(List<Transaction> transactions) {
+        String previousHash = getLastBlock().getHash();
+        Block newBlock = Block.builder()
+                .previousHash(previousHash)
+                .transactions(transactions)
+                .build();
+
+        newBlock.mine(DIFFICULTY);
         chain.add(newBlock);
     }
 
-    // Método para validar la integridad de la cadena
+    public boolean addTransaction(Transaction transaction) {
+        if (transaction != null) {
+            Block currentBlock = getCurrentBlock();
+            currentBlock.addTransaction(transaction);
+            return true;
+        }
+        return false;
+    }
+
+    public Block getCurrentBlock() {
+        return this.chain.get(this.chain.size() - 1);
+    }
+
     public boolean isValid() {
         for (int i = 1; i < chain.size(); i++) {
             Block currentBlock = chain.get(i);
@@ -62,6 +79,7 @@ public class Blockchain {
             e.printStackTrace();
         }
     }
+
     public List<Block> loadBlockchain(String filename) {
         List<Block> blockchain = new ArrayList<>();
         File file = new File(filename);
@@ -77,7 +95,6 @@ public class Blockchain {
         }
         return blockchain;
     }
-
 
 
     @Override
@@ -99,5 +116,4 @@ public class Blockchain {
         }
         return builder.toString();
     }
-
 }

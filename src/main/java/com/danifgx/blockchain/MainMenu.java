@@ -11,6 +11,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainMenu {
@@ -95,8 +96,9 @@ public class MainMenu {
                     lastBlock.addTransaction(transaction);
                     break;
                 case 3:
-                    Block newBlock = new Block(blockchain.getLastBlock().getHash(), new ArrayList<>());
-                    blockchain.addBlock(newBlock);
+                    List<Transaction> transactions = new ArrayList<>(); // Esto debería estar lleno de las transacciones que quieres incluir
+                    blockchain.addBlock(transactions);
+                    System.out.println("Bloque minado y añadido a la cadena.");
                     break;
                 case 4:
                     if (blockchain.isValid()) {
