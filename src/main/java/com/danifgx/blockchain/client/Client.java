@@ -1,8 +1,8 @@
 package com.danifgx.blockchain.client;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import com.danifgx.blockchain.server.authentication.UserAuthentication;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -22,19 +22,23 @@ public class Client {
         socket = new Socket(serverName, serverPort);
         out = new DataOutputStream(socket.getOutputStream());
         in = new DataInputStream(socket.getInputStream());
-        Scanner scanner = new Scanner(System.in);
+
         System.out.print(in.readUTF());
-        out.writeUTF(scanner.nextLine());
+        out.writeUTF("user1");
+
         System.out.print(in.readUTF());
-        out.writeUTF(scanner.nextLine());
-        boolean authStatus = in.readBoolean();
-        if (authStatus) {
+        out.writeUTF("password1");
+
+        String authStatus = in.readUTF();
+        if ("SUCCESS".equals(authStatus)) {
             System.out.println("Authentication successful.");
         } else {
             System.out.println("Authentication failed.");
         }
+
         System.out.println("Connected to server " + serverName + " on port " + serverPort);
     }
+
 
 
     public void authenticate() throws IOException {
@@ -46,7 +50,11 @@ public class Client {
 
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        out.writeUTF(password);
+        if (password.isEmpty()) {
+            System.out.println("La contraseña está vacía");
+        } else {
+            out.writeUTF(password);
+        }
 
         boolean authStatus = in.readBoolean();
         if (authStatus) {
@@ -54,7 +62,10 @@ public class Client {
         } else {
             System.out.println("Authentication failed.");
         }
+
+        scanner.close();
     }
+
 
     public void sendMessage(String message) throws IOException {
         out.writeUTF(message);

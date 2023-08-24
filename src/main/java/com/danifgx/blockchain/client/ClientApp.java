@@ -10,10 +10,25 @@ public class ClientApp {
         try {
             client.start();
 
-            String request = RequestTypes.GET_BLOCKCHAIN;
-            client.sendMessage(request);
-            String response = client.receiveMessage();
-            System.out.println("Server replied: " + response);
+            System.out.print(client.receiveMessage());
+            client.sendMessage("user1");
+
+            System.out.print(client.receiveMessage());
+            client.sendMessage("password1");
+
+            boolean isAuthenticated = Boolean.parseBoolean(client.receiveMessage());
+
+            client.stop();
+
+            if (isAuthenticated) {
+                System.out.println("Authenticated!");
+                String request = RequestTypes.GET_BLOCKCHAIN;
+                client.sendMessage(request);
+                String response = client.receiveMessage();
+                System.out.println("Server replied: " + response);
+            } else {
+                System.out.println("Authentication failed!");
+            }
 
             client.stop();
         } catch (IOException e) {
@@ -21,3 +36,4 @@ public class ClientApp {
         }
     }
 }
+

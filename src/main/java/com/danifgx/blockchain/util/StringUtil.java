@@ -1,6 +1,7 @@
 package com.danifgx.blockchain.util;
 
 import java.security.*;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
@@ -28,6 +29,9 @@ public class StringUtil {
     }
 
     public static PublicKey getKeyFromString(String keyString) {
+        if (keyString == null || keyString.trim().isEmpty()) {
+            throw new IllegalArgumentException("Key string is null or empty");
+        }
         try {
             byte[] byteKey = Base64.getDecoder().decode(keyString);
             X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
@@ -76,6 +80,17 @@ public class StringUtil {
             return ecdsaVerify.verify(signature);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static String toEcPublicKeyString(PublicKey publicKey) {
+        if (publicKey instanceof ECPublicKey) {
+            ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+            return "EC Public Key\n" +
+                    "            X: " + ecPublicKey.getW().getAffineX().toString(16) + "\n" +
+                    "            Y: " + ecPublicKey.getW().getAffineY().toString(16);
+        } else {
+            return "Not an EC Public Key";
         }
     }
 }

@@ -111,12 +111,13 @@ public class Blockchain implements Serializable{
             builder.append("\t\tHash: ").append(block.getHash()).append("\n");
             builder.append("\t\tTransactions: \n");
             for (Transaction transaction : block.getTransactions()) {
-                builder.append("\t\t\tSender: ").append(StringUtil.getStringFromKey(transaction.getSender())).append("\n");
-                builder.append("\t\t\tRecipient: ").append(transaction.getRecipient()).append("\n");
+                builder.append("\t\t\tSender: ").append(StringUtil.toEcPublicKeyString(transaction.getSender())).append("\n");
+                builder.append("\t\t\tRecipient: ").append(StringUtil.toEcPublicKeyString(transaction.getRecipient())).append("\n");
                 builder.append("\t\t\tValue: ").append(transaction.getValue()).append("\n");
             }
             builder.append("\n");
         }
         return builder.toString();
     }
+
 }

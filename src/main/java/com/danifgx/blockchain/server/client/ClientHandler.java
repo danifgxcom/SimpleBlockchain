@@ -51,20 +51,13 @@ public class ClientHandler implements Runnable {
 
 
     private void authenticateUser() throws IOException {
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        output.writeUTF("Please enter your username: ");
+        String username = input.readUTF();
 
-        writer.write("Please enter your username: ");
-        writer.flush();
-        String username = reader.readLine();
-
-        writer.write("Please enter your password: ");
-        writer.flush();
-        String password = reader.readLine();
+        output.writeUTF("Please enter your password: ");
+        String password = input.readUTF();
 
         boolean authenticated = authenticator.authenticate(username, password);
-        System.out.println(authenticated);
-
 
         if (authenticated) {
             output.writeUTF("SUCCESS");
@@ -79,9 +72,8 @@ public class ClientHandler implements Runnable {
             output.writeUTF("FAILURE");
             System.out.println("Authentication failed!");
         }
-
-
     }
+
 
     private void handleClientRequest() throws IOException {
         String clientRequest = input.readUTF();
