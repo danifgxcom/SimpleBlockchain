@@ -1,4 +1,4 @@
-package server.authentication;
+package com.danifgx.blockchain.server.authentication;
 
 import java.util.HashMap;
 import java.util.Map;

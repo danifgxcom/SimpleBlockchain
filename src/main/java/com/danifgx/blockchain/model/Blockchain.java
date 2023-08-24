@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 @Getter
 @Setter
-public class Blockchain {
+public class Blockchain implements Serializable{
 
     private static final int DIFFICULTY = 4;
     private List<Block> chain;

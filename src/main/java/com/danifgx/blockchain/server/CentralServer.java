@@ -1,8 +1,8 @@
-package server;
+package com.danifgx.blockchain.server;
 
 import com.danifgx.blockchain.model.Block;
 import com.danifgx.blockchain.model.Blockchain;
-import server.client.ClientHandler;
+import com.danifgx.blockchain.server.client.ClientHandler;
 
 import java.io.File;
 import java.io.IOException;

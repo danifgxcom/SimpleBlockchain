@@ -34,7 +34,6 @@ public class Client {
             System.out.println("Authentication failed.");
         }
         System.out.println("Connected to server " + serverName + " on port " + serverPort);
-        // Aquí puedes continuar con el flujo de la aplicación una vez que el cliente esté autenticado
     }
 
 
